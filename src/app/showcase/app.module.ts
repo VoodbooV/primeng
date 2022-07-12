@@ -16,6 +16,7 @@ import { TabMenuModule } from 'primeng/tabmenu';
 import { SliderModule } from 'primeng/slider';
 import { CalendarModule } from 'primeng/calendar';
 import { TreeModule } from 'primeng/tree'; 
+import { VIZTreeModule } from 'primeng/tree'; 
 import { ProgressBarModule } from 'primeng/progressbar';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ChipModule } from 'primeng/chip';
@@ -79,6 +80,7 @@ import { AppMainComponent } from './app.main.component';
         SliderModule,
         CalendarModule,
         TreeModule,
+        VIZTreeModule,
         ProgressBarModule,
         InputNumberModule,
         ChipModule,

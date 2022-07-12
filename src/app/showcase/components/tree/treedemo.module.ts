@@ -12,6 +12,7 @@ import {TreeDragDropDemo} from './treedragdropdemo';
 import {TreeHorizontalDemo} from './treehorizontaldemo';
 import {TreeDemoRoutingModule} from './treedemo-routing.module';
 import {TreeModule} from 'primeng/tree';
+import {VIZTreeModule} from 'primeng/tree';
 import {ToastModule} from 'primeng/toast';
 import {ButtonModule} from 'primeng/button';
 import {DialogModule} from 'primeng/dialog';
@@ -26,6 +27,7 @@ import {AppDemoActionsModule} from '../../app.demoactions.component';
         FormsModule,
 		TreeDemoRoutingModule,
         TreeModule,
+        VIZTreeModule,
         ToastModule,
         ButtonModule,
         DialogModule,

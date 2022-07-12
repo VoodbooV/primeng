@@ -13,6 +13,7 @@ import { ToastModule } from 'primeng/toast';
 import { GalleriaModule } from 'primeng/galleria';
 import { TerminalModule } from 'primeng/terminal';
 import { TreeModule } from 'primeng/tree';
+import { VIZTreeModule } from 'primeng/tree';
 
 @NgModule({
 	imports: [
@@ -26,6 +27,7 @@ import { TreeModule } from 'primeng/tree';
         DialogModule,
         TerminalModule,
         TreeModule,
+        VIZTreeModule,
         ToastModule,
         GalleriaModule,
 		AppDemoActionsModule
