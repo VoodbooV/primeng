@@ -1,4 +1,5 @@
 export interface TreeNode<T = any> {
+    summaryExpanded?: boolean;
     label?: string;
     data?: T;
     icon?: string;
