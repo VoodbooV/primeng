@@ -33,7 +33,6 @@ import {Scroller, ScrollerModule, ScrollerOptions} from 'primeng/scroller';
                             <span class="p-checkbox-icon pi" [ngClass]="{'pi-check':isSelected(),'pi-minus':node.partialSelected}"></span>
                         </div>
                     </div>
-                    <span [class]="getIcon()" *ngIf="node.icon||node.expandedIcon||node.collapsedIcon"></span>
                     <div class="p-treenode-label">  
                         <div *ngIf="!tree.getTemplateForNode(node)">{{node.label}}</div>
                         <div *ngIf="tree.getTemplateForNode(node)">
@@ -41,12 +40,8 @@ import {Scroller, ScrollerModule, ScrollerOptions} from 'primeng/scroller';
                         </div>
                     </div>
                 </div>
-                <div *ngIf="node.summaryExpanded" class="p-treenode-content" [style.paddingLeft]="(level * indentation)  + 'rem'" (click)="onNodeClick($event)" (contextmenu)="onNodeRightClick($event)" (touchend)="onNodeTouchEnd()"
-                    (drop)="onDropNode($event)" (dragover)="onDropNodeDragOver($event)" (dragenter)="onDropNodeDragEnter($event)" (dragleave)="onDropNodeDragLeave($event)"
-                    [draggable]="tree.draggableNodes" (dragstart)="onDragStart($event)" (dragend)="onDragStop($event)" [attr.tabindex]="0"
-                    [ngClass]="{'p-treenode-selectable':tree.selectionMode && node.selectable !== false,'p-treenode-dragover':draghoverNode, 'p-highlight':isSelected()}" role="treeitem"
-                    (keydown)="onKeyDown($event)" [attr.aria-posinset]="this.index + 1" [attr.aria-expanded]="this.node.expanded" [attr.aria-selected]="isSelected()" [attr.aria-label]="node.label">
-                    <span class="p-treenode-label">
+                <div *ngIf="node.summaryExpanded" class="p-treenode-content" [style.paddingLeft]="(level * indentation)  + 'rem'">
+                    <div class="p-treenode-label">
                         <div *ngIf="!tree.getTemplateForNode(node)">{{node.label}}</div>
                         <div *ngIf="tree.getTemplateForNode(node)">
                             <ng-container *ngTemplateOutlet="tree.getTemplateForNode(node); context: {$implicit: node}"></ng-container>
@@ -54,23 +49,19 @@ import {Scroller, ScrollerModule, ScrollerOptions} from 'primeng/scroller';
                         <button type="button" [attr.aria-label]="tree.togglerAriaLabel" class="p-tree-toggler p-link" (click)="toggle($event)" pRipple tabindex="-1">
                             <span class="p-tree-toggler-icon pi pi-fw" [ngClass]="{'pi-chevron-right':!node.expanded,'pi-chevron-down':node.expanded}"></span>
                         </button>
-                    </span>
+                    </div>
                 </div>
                 <ul class="p-treenode-children" style="display: none;" *ngIf="!tree.virtualScroll && node.children && node.summaryExpanded && node.expanded" [style.display]="node.expanded ? 'block' : 'none'" role="group">
                     <viz-treeNode *ngFor="let childNode of node.children;let firstChild=first;let lastChild=last; let index=index; trackBy: tree.trackBy" [node]="childNode" [parentNode]="node"
                     [firstChild]="firstChild" [lastChild]="lastChild" [index]="index" [itemSize]="itemSize" [level]="level + 1"></viz-treeNode>
                 </ul>
-                <div *ngIf="node.summaryExpanded" class="p-treenode-content" [style.paddingLeft]="(level * indentation)  + 'rem'" (click)="onNodeClick($event)" (contextmenu)="onNodeRightClick($event)" (touchend)="onNodeTouchEnd()"
-                    (drop)="onDropNode($event)" (dragover)="onDropNodeDragOver($event)" (dragenter)="onDropNodeDragEnter($event)" (dragleave)="onDropNodeDragLeave($event)"
-                    [draggable]="tree.draggableNodes" (dragstart)="onDragStart($event)" (dragend)="onDragStop($event)" [attr.tabindex]="0"
-                    [ngClass]="{'p-treenode-selectable':tree.selectionMode && node.selectable !== false,'p-treenode-dragover':draghoverNode, 'p-highlight':isSelected()}" role="treeitem"
-                    (keydown)="onKeyDown($event)" [attr.aria-posinset]="this.index + 1" [attr.aria-expanded]="this.node.expanded" [attr.aria-selected]="isSelected()" [attr.aria-label]="node.label">
-                    <span class="p-treenode-label">
-                            <div *ngIf="!tree.getTemplateForNode(node)">{{node.label}}</div>
-                            <div *ngIf="tree.getTemplateForNode(node)">
-                                <ng-container *ngTemplateOutlet="tree.getTemplateForNode(node); context: {$implicit: node}"></ng-container>
-                            </div>
-                    </span>
+                <div *ngIf="node.summaryExpanded" class="p-treenode-content" [style.paddingLeft]="(level * indentation)  + 'rem'">
+                    <div class="p-treenode-label">
+                        <div *ngIf="!tree.getTemplateForNode(node)">{{node.label}}</div>
+                        <div *ngIf="tree.getTemplateForNode(node)">
+                            <ng-container *ngTemplateOutlet="tree.getTemplateForNode(node); context: {$implicit: node}"></ng-container>
+                        </div>
+                    </div>
                 </div>
             </li>
             <li *ngIf="tree.droppableNodes&&lastChild" class="p-treenode-droppoint" [ngClass]="{'p-treenode-droppoint-active':draghoverNext}"
