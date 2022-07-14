@@ -1,5 +1,5 @@
 import {NgModule,Component,Input,AfterContentInit,OnDestroy,Output,EventEmitter,OnInit,OnChanges,
-    ContentChildren,QueryList,TemplateRef,Inject,ElementRef,forwardRef,ChangeDetectionStrategy,SimpleChanges, ViewEncapsulation, ViewChild} from '@angular/core';
+    ContentChildren,QueryList,TemplateRef,Inject,ElementRef,forwardRef,ChangeDetectionStrategy,SimpleChanges, ViewEncapsulation, ViewChild, SkipSelf, Host, Injector} from '@angular/core';
 import {Optional} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {PrimeNGConfig, TranslationKeys, TreeNode} from 'primeng/api';
@@ -40,28 +40,8 @@ import {Scroller, ScrollerModule, ScrollerOptions} from 'primeng/scroller';
                         </div>
                     </div>
                 </div>
-                <div *ngIf="node.summaryExpanded" class="p-treenode-content" [style.paddingLeft]="(level * indentation)  + 'rem'">
-                    <div class="p-treenode-label">
-                        <div *ngIf="!tree.getTemplateForNode(node)">{{node.label}}</div>
-                        <div *ngIf="tree.getTemplateForNode(node)">
-                            <ng-container *ngTemplateOutlet="tree.getTemplateForNode(node); context: {$implicit: node}"></ng-container>
-                        </div>
-                        <button type="button" [attr.aria-label]="tree.togglerAriaLabel" class="p-tree-toggler p-link" (click)="toggle($event)" pRipple tabindex="-1">
-                            <span class="p-tree-toggler-icon pi pi-fw" [ngClass]="{'pi-chevron-right':!node.expanded,'pi-chevron-down':node.expanded}"></span>
-                        </button>
-                    </div>
-                </div>
-                <ul class="p-treenode-children" style="display: none;" *ngIf="!tree.virtualScroll && node.children && node.summaryExpanded && node.expanded" [style.display]="node.expanded ? 'block' : 'none'" role="group">
-                    <viz-treeNode *ngFor="let childNode of node.children;let firstChild=first;let lastChild=last; let index=index; trackBy: tree.trackBy" [node]="childNode" [parentNode]="node"
-                    [firstChild]="firstChild" [lastChild]="lastChild" [index]="index" [itemSize]="itemSize" [level]="level + 1"></viz-treeNode>
-                </ul>
-                <div *ngIf="node.summaryExpanded" class="p-treenode-content" [style.paddingLeft]="(level * indentation)  + 'rem'">
-                    <div class="p-treenode-label">
-                        <div *ngIf="!tree.getTemplateForNode(node)">{{node.label}}</div>
-                        <div *ngIf="tree.getTemplateForNode(node)">
-                            <ng-container *ngTemplateOutlet="tree.getTemplateForNode(node); context: {$implicit: node}"></ng-container>
-                        </div>
-                    </div>
+                <div *ngIf="node.summaryExpanded && tree.getTemplateForNode(node, 'summary')" class="p-treenode-expansion">
+                    <ng-container *ngTemplateOutlet="tree.getTemplateForNode(node, 'summary'); context: {$implicit: node}; injector: injector"></ng-container> 
                 </div>
             </li>
             <li *ngIf="tree.droppableNodes&&lastChild" class="p-treenode-droppoint" [ngClass]="{'p-treenode-droppoint-active':draghoverNext}"
@@ -108,7 +88,7 @@ import {Scroller, ScrollerModule, ScrollerOptions} from 'primeng/scroller';
     encapsulation: ViewEncapsulation.None,
     host: {
         'class': 'p-element'
-    }
+    } 
 })
 export class VIZTreeNode implements OnInit {
 
@@ -136,7 +116,7 @@ export class VIZTreeNode implements OnInit {
 
     tree: VIZTree;
 
-    constructor(@Inject(forwardRef(() => VIZTree)) tree) {
+    constructor(@Inject(forwardRef(() => VIZTree)) tree, public injector: Injector) {
         this.tree = tree as VIZTree;
     }
 
@@ -1112,9 +1092,9 @@ export class VIZTree implements OnInit,AfterContentInit,OnChanges,OnDestroy,Bloc
         return this.filteredNodes ? this.filteredNodes : this.value;
     }
 
-    getTemplateForNode(node: TreeNode): TemplateRef<any> {
+    getTemplateForNode(node: TreeNode, override: string = ""): TemplateRef<any> {
         if (this.templateMap)
-            return node.type ? this.templateMap[node.type] : this.templateMap['default'];
+            return node.type ? this.templateMap[node.type] : (override && override.trim()) ? this.templateMap[override] : this.templateMap['default'];
         else
             return null;
     }
@@ -1356,9 +1336,51 @@ export class VIZTree implements OnInit,AfterContentInit,OnChanges,OnDestroy,Bloc
         }
     }
 }
+
+@Component({
+    selector: 'viz-treeToggler',
+    template: `
+        <button type="button" [attr.aria-label]="tree.togglerAriaLabel" class="p-tree-toggler p-link" (click)="toggle($event)" pRipple tabindex="-1">
+            <span class="p-tree-toggler-icon pi pi-fw" [ngClass]="{'pi-chevron-right':!node.expanded,'pi-chevron-down':node.expanded}"></span>
+        </button>
+    `,
+    encapsulation: ViewEncapsulation.None,
+    host: {
+        'class': 'p-element'
+    }
+})
+export class VIZTreeToggler {
+    @Input() node: any;
+
+    constructor(public treeNode:VIZTreeNode, public tree: VIZTree) {}
+
+    toggle(event: Event) {
+        this.treeNode.toggle(event);
+    }
+}
+
+@Component({
+    selector: 'viz-treeNodeChildren',
+    template: `
+        <ul class="p-treenode-children" style="display: none;" *ngIf="!tree.virtualScroll && node.children && node.expanded" [style.display]="node.expanded ? 'block' : 'none'" role="group">
+            <viz-treeNode *ngFor="let childNode of node.children;let firstChild=first;let lastChild=last; let index=index; trackBy: tree.trackBy" [node]="childNode" [parentNode]="node"
+                [firstChild]="firstChild" [lastChild]="lastChild" [index]="index" [itemSize]="treeNode.itemSize" [level]="treeNode.level + 1"></viz-treeNode>
+        </ul>
+    `,
+    encapsulation: ViewEncapsulation.None,
+    host: {
+        'class': 'p-element'
+    }
+})
+export class VIZTreeNodeChildren {
+    @Input() node: any;
+
+    constructor(public treeNode:VIZTreeNode, public tree: VIZTree) {}
+}
+
 @NgModule({
     imports: [CommonModule,SharedModule,RippleModule,ScrollerModule],
-    exports: [VIZTree,SharedModule,ScrollerModule],
-    declarations: [VIZTree,VIZTreeNode]
+    exports: [VIZTree,SharedModule,VIZTreeNode,VIZTreeToggler,VIZTreeNodeChildren,ScrollerModule],
+    declarations: [VIZTree,VIZTreeNode,VIZTreeToggler, VIZTreeNodeChildren]
 })
 export class VIZTreeModule { }
