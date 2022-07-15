@@ -22,16 +22,16 @@
         <h5>viz-tree</h5>
         <viz-tree [value]="files1">
             <ng-template let-node  pTemplate="default">
-                <input [(ngModel)]="node.label" type="text" style="width:100%">
+                <span>{{node.label}}</span>
             </ng-template>
             <ng-template let-node pTemplate="summary">
-                <div>
-                    stuff1
+                <div class="summary-first-part">
+                    <div>stuff1</div>
                     <viz-treeToggler [node]="node">children</viz-treeToggler>
                 </div>
                 <viz-treeNodeChildren [node]="node"></viz-treeNodeChildren>
-                <div>
-                    stuff2
+                <div class="summary-second-part">
+                    <div>stuff2</div>
                 </div>
             </ng-template>
         </viz-tree>

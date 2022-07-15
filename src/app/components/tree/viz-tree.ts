@@ -1342,6 +1342,7 @@ export class VIZTree implements OnInit,AfterContentInit,OnChanges,OnDestroy,Bloc
     template: `
         <button type="button" [attr.aria-label]="tree.togglerAriaLabel" class="p-tree-toggler p-link" (click)="toggle($event)" pRipple tabindex="-1">
             <span class="p-tree-toggler-icon pi pi-fw" [ngClass]="{'pi-chevron-right':!node.expanded,'pi-chevron-down':node.expanded}"></span>
+            <ng-content></ng-content>
         </button>
     `,
     encapsulation: ViewEncapsulation.None,

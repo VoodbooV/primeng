@@ -154,3 +154,7 @@
 .p-scroller .p-tree-container {
     overflow: visible;
 }
+
+.p-treenode-expansion {
+    padding: 0.5rem;
+}
