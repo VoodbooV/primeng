@@ -155,6 +155,10 @@
     overflow: visible;
 }
 
-.p-treenode-expansion {
+.p-treenode-summary {
     padding: 0.5rem;
+}
+
+.p-treenode-leaf > .p-treenode-summary .p-tree-toggler {
+    display: none;
 }

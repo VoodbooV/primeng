@@ -25,22 +25,22 @@ import {Scroller, ScrollerModule, ScrollerOptions} from 'primeng/scroller';
                     [draggable]="tree.draggableNodes" (dragstart)="onDragStart($event)" (dragend)="onDragStop($event)" [attr.tabindex]="0"
                     [ngClass]="{'p-treenode-selectable':tree.selectionMode && node.selectable !== false,'p-treenode-dragover':draghoverNode, 'p-highlight':isSelected()}" role="treeitem"
                     (keydown)="onKeyDown($event)" [attr.aria-posinset]="this.index + 1" [attr.aria-expanded]="this.node.expanded" [attr.aria-selected]="isSelected()" [attr.aria-label]="node.label">
-                    <button type="button" [attr.aria-label]="tree.togglerAriaLabel" class="p-tree-toggler p-link" (click)="toggleSummary()" pRipple tabindex="-1">
-                        <span class="p-tree-toggler-icon pi pi-fw" [ngClass]="{'pi-chevron-right':!node.summaryExpanded,'pi-chevron-down':node.summaryExpanded}"></span>
-                    </button>
                     <div class="p-checkbox p-component" [ngClass]="{'p-checkbox-disabled': node.selectable === false}" *ngIf="tree.selectionMode == 'checkbox'" [attr.aria-checked]="isSelected()">
                         <div class="p-checkbox-box" [ngClass]="{'p-highlight': isSelected(), 'p-indeterminate': node.partialSelected}">
                             <span class="p-checkbox-icon pi" [ngClass]="{'pi-check':isSelected(),'pi-minus':node.partialSelected}"></span>
                         </div>
                     </div>
                     <div class="p-treenode-label">  
-                        <div *ngIf="!tree.getTemplateForNode(node)">{{node.label}}</div>
+                        <div *ngIf="!tree.getTemplateForNode(node)">
+                            <viz-treeSummaryToggler [node]="node"></viz-treeSummaryToggler>    
+                            {{node.label}}
+                        </div>
                         <div *ngIf="tree.getTemplateForNode(node)">
-                            <ng-container *ngTemplateOutlet="tree.getTemplateForNode(node); context: {$implicit: node}"></ng-container>
+                            <ng-container *ngTemplateOutlet="tree.getTemplateForNode(node); context: {$implicit: node}; injector: injector"></ng-container>
                         </div>
                     </div>
                 </div>
-                <div *ngIf="node.summaryExpanded && tree.getTemplateForNode(node, 'summary')" class="p-treenode-expansion">
+                <div *ngIf="node.summaryExpanded && tree.getTemplateForNode(node, 'summary')" class="p-treenode-summary">
                     <ng-container *ngTemplateOutlet="tree.getTemplateForNode(node, 'summary'); context: {$implicit: node}; injector: injector"></ng-container> 
                 </div>
             </li>
@@ -149,7 +149,7 @@ export class VIZTreeNode implements OnInit {
         return this.tree.isNodeLeaf(this.node);
     }
 
-    toggleSummary() {
+    toggleSummary(event: Event) {
         this.node.summaryExpanded = !this.node.summaryExpanded;
     }
 
@@ -1341,7 +1341,6 @@ export class VIZTree implements OnInit,AfterContentInit,OnChanges,OnDestroy,Bloc
     selector: 'viz-treeToggler',
     template: `
         <button type="button" [attr.aria-label]="tree.togglerAriaLabel" class="p-tree-toggler p-link" (click)="toggle($event)" pRipple tabindex="-1">
-            <span class="p-tree-toggler-icon pi pi-fw" [ngClass]="{'pi-chevron-right':!node.expanded,'pi-chevron-down':node.expanded}"></span>
             <ng-content></ng-content>
         </button>
     `,
@@ -1357,6 +1356,28 @@ export class VIZTreeToggler {
 
     toggle(event: Event) {
         this.treeNode.toggle(event);
+    }
+}
+
+@Component({
+    selector: 'viz-treeSummaryToggler',
+    template: `
+        <button type="button" [attr.aria-label]="tree.togglerAriaLabel" class="p-tree-summary-toggler p-link" (click)="toggleSummary($event)" pRipple tabindex="-1">
+            <ng-content></ng-content>
+        </button>
+    `,
+    encapsulation: ViewEncapsulation.None,
+    host: {
+        'class': 'p-element'
+    }
+})
+export class VIZTreeSummaryToggler {
+    @Input() node: any;
+
+    constructor(public treeNode:VIZTreeNode, public tree: VIZTree) {}
+
+    toggleSummary(event: Event) {
+        this.treeNode.toggleSummary(event);
     }
 }
 
@@ -1381,7 +1402,7 @@ export class VIZTreeNodeChildren {
 
 @NgModule({
     imports: [CommonModule,SharedModule,RippleModule,ScrollerModule],
-    exports: [VIZTree,SharedModule,VIZTreeNode,VIZTreeToggler,VIZTreeNodeChildren,ScrollerModule],
-    declarations: [VIZTree,VIZTreeNode,VIZTreeToggler, VIZTreeNodeChildren]
+    exports: [VIZTree,SharedModule,VIZTreeNode,VIZTreeToggler,VIZTreeSummaryToggler,VIZTreeNodeChildren,ScrollerModule],
+    declarations: [VIZTree,VIZTreeNode,VIZTreeToggler,VIZTreeSummaryToggler,VIZTreeNodeChildren]
 })
 export class VIZTreeModule { }
